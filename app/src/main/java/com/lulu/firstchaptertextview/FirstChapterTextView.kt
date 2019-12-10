@@ -16,7 +16,7 @@ import android.view.View
 
 class FirstChapterTextView : View {
     /**
-     * 段首缩进
+     * 段首缩进 字符数
      */
     public var paragraphIndentSize = 2
     /**
