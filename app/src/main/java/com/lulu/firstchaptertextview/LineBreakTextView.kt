@@ -151,7 +151,8 @@ class LineBreakTextView : View {
                 val c = textCharArray?.get(i)
 
                 if (isNeedCheckParagraphHeadEmptyChar) {
-                    if (c == ' ') {
+                    //空白字符判断
+                    if (c == ' ' || c == '\u0020' || c == '\u3000') {
                         i++
                         continue
                     }
