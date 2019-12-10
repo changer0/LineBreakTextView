@@ -30,5 +30,11 @@
         </LinearLayout>
     </ScrollView>
 
+    <Button
+        android:id="@+id/setMaxHeight"
+        android:text="设置最大高度"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

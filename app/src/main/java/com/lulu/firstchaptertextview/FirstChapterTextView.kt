@@ -18,15 +18,25 @@ class FirstChapterTextView : View {
     /**
      * 段首缩进
      */
-    var paragraphIndentSize = 2
+    public var paragraphIndentSize = 2
     /**
      * 段间距 倍数
      */
-    var paragraphSpacingMultiplier = 2.0f
+    public var paragraphSpacingMultiplier = 2.0f
     /**
      * 正文间距 倍数
      */
-    var lineSpacingMultiplier = 1.0f
+    public var lineSpacingMultiplier = 1.0f
+    /**
+     * 最大高度
+     */
+    public var maxHeight = Int.MAX_VALUE
+        set(value) {
+            field = value
+            //重新测量
+            requestLayout()
+        }
+
     /**
      * 文字位置
      */
@@ -68,6 +78,9 @@ class FirstChapterTextView : View {
 
         if (layoutHeight > 0 ) {
             height = layoutHeight.toInt()
+        }
+        if (height > maxHeight) {
+            height = maxHeight
         }
         setMeasuredDimension(width, height)
 

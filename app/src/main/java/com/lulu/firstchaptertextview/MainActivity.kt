@@ -46,5 +46,12 @@ class MainActivity : AppCompatActivity() {
         val dm = this.applicationContext.resources
             .displayMetrics
         textView.lineBreak(dm.widthPixels)
+        setMaxHeight.setOnClickListener{
+            if (textView.maxHeight == 300) {
+                textView.maxHeight = Int.MAX_VALUE
+            } else {
+                textView.maxHeight = 300
+            }
+        }
     }
 }
