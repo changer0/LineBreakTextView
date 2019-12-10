@@ -8,7 +8,10 @@ import android.view.View
 
 /**
  * @author zhanglulu on 2019/12/9.
- * for 首章显示 TextView 排版 绘制
+ * for 首章显示 TextView 排版 绘制 <br/>
+ *  使用方式： <br/>
+ *  1. 设置文本 text
+ *  2. 排版 lineBreak
  */
 
 class FirstChapterTextView : View {
