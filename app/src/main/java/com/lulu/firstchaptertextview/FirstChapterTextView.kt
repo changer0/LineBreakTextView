@@ -36,6 +36,31 @@ class FirstChapterTextView : View {
             //重新测量
             requestLayout()
         }
+    /**
+     * 文字大小
+     */
+    public var textSize = 40f
+        set(value) {
+            field = value
+            paint.textSize = value
+        }
+
+    /**
+     * 文字颜色
+     */
+    public var textColor = 0x000000
+        set(value) {
+            field = value
+            paint.color = value
+        }
+    /**
+     * 文字透明度
+     */
+    public var alpha = 255
+        set(value) {
+            field = value
+            paint.alpha = value
+        }
 
     /**
      * 文字位置
@@ -66,8 +91,8 @@ class FirstChapterTextView : View {
     private fun init(ctx: Context) {
         paint.color = 0x000000
         paint.alpha = 225
+        paint.textSize = 40f
         paint.isAntiAlias = true
-        paint.textSize = 60f
 
     }
 
