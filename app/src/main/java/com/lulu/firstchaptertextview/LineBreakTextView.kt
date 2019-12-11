@@ -56,7 +56,7 @@ class LineBreakTextView : View {
     /**
      * 文字透明度
      */
-    public var alpha = 255
+    public var textAlpha = 255
         set(value) {
             field = value
             paint.alpha = value
