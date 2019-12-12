@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
                 "  (本章完)\r\n"
         val dm = this.applicationContext.resources
             .displayMetrics
+        //textView.isNeedTitle = false
         textView.lineBreak(dm.widthPixels)
         setMaxHeight.setOnClickListener{
             if (textView.maxHeight == 300) {

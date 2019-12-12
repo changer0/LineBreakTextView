@@ -19,10 +19,15 @@ class LineBreakTextView : View {
      * 段首缩进 字符数
      */
     public var paragraphIndentSize = 2
+
+    /**
+     * 标题间距 倍数
+     */
+    public var titleSpacingMultiplier = 2.0f
     /**
      * 段间距 倍数
      */
-    public var paragraphSpacingMultiplier = 2.0f
+    public var paragraphSpacingMultiplier = 1.5f
     /**
      * 正文间距 倍数
      */
@@ -39,10 +44,10 @@ class LineBreakTextView : View {
     /**
      * 文字大小
      */
-    public var textSize = 40f
+    public var textSize = 48f
         set(value) {
             field = value
-            paint.textSize = value
+            textPaint.textSize = value
         }
 
     /**
@@ -51,7 +56,7 @@ class LineBreakTextView : View {
     public var textColor = 0x000000
         set(value) {
             field = value
-            paint.color = value
+            textPaint.color = value
         }
     /**
      * 文字透明度
@@ -59,7 +64,38 @@ class LineBreakTextView : View {
     public var textAlpha = 255
         set(value) {
             field = value
-            paint.alpha = value
+            textPaint.alpha = value
+        }
+
+    /**
+     * 是否需要标题
+     */
+    public var isNeedTitle = true
+
+    /**
+     * 标题文字大小
+     */
+    public var titleSize = 50f
+        set(value) {
+            field = value
+            titlePaint.textSize = value
+        }
+
+    /**
+     * 标题文字颜色
+     */
+    public var titleColor = 0x000000
+        set(value) {
+            field = value
+            titlePaint.color = value
+        }
+    /**
+     * 标题文字透明度
+     */
+    public var titleAlpha = 255
+        set(value) {
+            field = value
+            titlePaint.alpha = value
         }
 
     /**
@@ -82,18 +118,24 @@ class LineBreakTextView : View {
         }
 
     private var textCharArray: CharArray?= null
-    private var paint: TextPaint = TextPaint()
+    private var textPaint: TextPaint = TextPaint()
+    private var titlePaint: TextPaint = TextPaint()
 
     constructor(ctx: Context) : super(ctx) {init(ctx)}
     constructor(ctx: Context, attrs: AttributeSet) : super(ctx,attrs) {init(ctx)}
     constructor(ctx: Context, attrs: AttributeSet, defStyleAttr : Int) : super(ctx,attrs, defStyleAttr) {init(ctx)}
 
     private fun init(ctx: Context) {
-        paint.color = 0x000000
-        paint.alpha = 225
-        paint.textSize = 40f
-        paint.isAntiAlias = true
+        textPaint.color = textColor
+        textPaint.alpha = textAlpha
+        textPaint.textSize = textSize
+        textPaint.isAntiAlias = true//抗锯齿
 
+        titlePaint.color = titleColor
+        titlePaint.alpha = titleAlpha
+        titlePaint.textSize = titleSize
+        titlePaint.isFakeBoldText = true
+        titlePaint.isAntiAlias = true//抗锯齿
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -119,6 +161,11 @@ class LineBreakTextView : View {
         super.draw(canvas)
         for (i in 0 until textPositions.size) {
             val textPosition = textPositions[i]
+            val paint = if (textPosition.type == TextPosition.TITLE) {
+                titlePaint
+            } else {
+                textPaint
+            }
             canvas?.drawText(textPosition.text, textPosition.x, textPosition.y, paint)
         }
     }
@@ -138,9 +185,16 @@ class LineBreakTextView : View {
 
         var isNeedCheckParagraphHeadEmptyChar = false//是否检查段首空白字符
 
-        val fontMetrics = paint.fontMetrics
+        val fontMetrics = textPaint.fontMetrics
         val lineHeight = (fontMetrics.bottom - fontMetrics.top) * lineSpacingMultiplier
         curY = lineHeight
+
+        //首行是否为标题
+        var textType = if (isNeedTitle) {
+            TextPosition.TITLE
+        } else {
+            TextPosition.NORMAL
+        }
 
         val size = textCharArray?.size
         size?.let {
@@ -159,11 +213,18 @@ class LineBreakTextView : View {
                 }
 
                 //当前文字宽度
-                val cW = paint.measureText(c.toString())
+                val cW = if (textType == TextPosition.TITLE) {
+                    titlePaint.measureText(c.toString())
+                } else {
+                    textPaint.measureText(c.toString())
+                }
+
                 //位置保存点
                 textPosition.x = curX
                 textPosition.y = curY
                 textPosition.text = c.toString()
+                textPosition.type = textType
+
                 //curX 向右移动一个字
                 curX += cW
 
@@ -171,9 +232,16 @@ class LineBreakTextView : View {
                 if (isParagraph(textCharArray, i)) {
                     //如果是段落,再移动一位
                     i++
-                    curX = initX + paint.measureText("中") * paragraphIndentSize//段首缩进
-                    curY += (lineHeight * paragraphSpacingMultiplier)
+                    curX = initX + textPaint.measureText("中") * paragraphIndentSize//段首缩进
+                    //根据不同的文字类型设置不同的行高
+                    curY += if (textType == TextPosition.TITLE) {
+                        (lineHeight * titleSpacingMultiplier)
+                    } else {
+                        (lineHeight * paragraphSpacingMultiplier)
+                    }
                     isNeedCheckParagraphHeadEmptyChar = true
+                    //除了首段，后续段落都为 Normal
+                    textType = TextPosition.NORMAL
                 } else if (isNeedNewLine(textCharArray, i, curX, availableWidth)) {
                     //断行需要回溯
                     curX = initX
@@ -202,7 +270,7 @@ class LineBreakTextView : View {
                 return false
             }
             //判断下一个 char 是否到达边界
-            if (curX + paint.measureText(charArray[curIndex+1].toString()) > maxWith) {
+            if (curX + textPaint.measureText(charArray[curIndex+1].toString()) > maxWith) {
                 return true
             }
         }
@@ -231,9 +299,10 @@ class LineBreakTextView : View {
      * 当前文字位置
      */
     class TextPosition {
-        val NORMAL = 0x0
-        val PARAGRAPH_START = 0x1
-        val PARAGRAPH_END = 0x2
+        companion object {
+            val NORMAL = 0x0
+            val TITLE = 0x1
+        }
 
         var text = ""
         var x = 0f
