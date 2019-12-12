@@ -181,13 +181,13 @@ class LineBreakTextView : View {
         //X 的初始化位置
         val initX = paddingLeft.toFloat()
         var curX = initX
-        var curY = 0f
+        var curY = paddingTop.toFloat()
 
         var isNeedCheckParagraphHeadEmptyChar = false//是否检查段首空白字符
 
         val fontMetrics = textPaint.fontMetrics
         val lineHeight = (fontMetrics.bottom - fontMetrics.top) * lineSpacingMultiplier
-        curY = lineHeight
+        curY += lineHeight
 
         //首行是否为标题
         var textType = if (isNeedTitle) {
