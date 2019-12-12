@@ -39,6 +39,11 @@ class LineBreakTextView : View {
      * 最大行数
      */
     public var maxLines = Int.MAX_VALUE
+        set(value) {
+            field = value
+            //重新测量
+            requestLayout()
+        }
     /**
      * 最大高度
      */
