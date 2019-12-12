@@ -251,6 +251,7 @@ class LineBreakTextView : View {
                 //移动下一个游标
                 i++
             }
+            curY += paddingBottom
             layoutHeight = curY
         }
     }
