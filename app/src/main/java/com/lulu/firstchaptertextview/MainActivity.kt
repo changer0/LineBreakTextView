@@ -42,11 +42,12 @@ class MainActivity : AppCompatActivity() {
                 "  “呵呵，还说不爱，美美，你有反应了……”他的手指移到了她的面前，他指腹上的那抹湿润让她顿时红透了半边的脸，垂下眼睑，她哀求的道：“别……别在这里，琴……”琴声还在响，响彻琴室，让她的心随之而慌乱着。\r\n" +
                 "  “可我就想在这里。”就在明晓殊半眯着眸子还在想着要怎么逃离身上的男人的时候，男人的身体徐徐俯下……\r\n" +
                 "  “啊……”她惊叫，可是回应她的只有一个又一个杂乱无章的音符，琴上的乱，乱了谁人的一颗心……\r\n" +
-                "  (本章完)\r\n"
+                "  (本章完)"
         val dm = this.applicationContext.resources
             .displayMetrics
         //textView.isNeedTitle = false
         textView.lineBreak(dm.widthPixels)
+        textView.maxLines = 3
         setMaxHeight.setOnClickListener{
             if (textView.maxHeight == 300) {
                 textView.maxHeight = Int.MAX_VALUE

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 
 /**
@@ -15,6 +16,8 @@ import android.view.View
  */
 
 class LineBreakTextView : View {
+    private val TAG = "LineBreakTextView"
+
     /**
      * 段首缩进 字符数
      */
@@ -32,6 +35,10 @@ class LineBreakTextView : View {
      * 正文间距 倍数
      */
     public var lineSpacingMultiplier = 1.0f
+    /**
+     * 最大行数
+     */
+    public var maxLines = Int.MAX_VALUE
     /**
      * 最大高度
      */
@@ -104,6 +111,11 @@ class LineBreakTextView : View {
     private val textPositions = ArrayList<TextPosition>()
 
     /**
+     * 行 Y 坐标
+     */
+    private val textLineYs = ArrayList<Float>()
+
+    /**
      * 布局高度
      */
     private var layoutHeight  = 0f
@@ -146,6 +158,10 @@ class LineBreakTextView : View {
         if (layoutHeight > 0 ) {
             height = layoutHeight.toInt()
         }
+        if (getLines() > maxLines && maxLines - 1 > 0) {
+            val textBottomH = textPaint.fontMetrics.bottom.toInt()
+            height = (textLineYs[maxLines-1]).toInt() + paddingBottom + textBottomH
+        }
         if (height > maxHeight) {
             height = maxHeight
         }
@@ -176,7 +192,7 @@ class LineBreakTextView : View {
      */
     public fun lineBreak(maxWidth: Int) {
         val availableWidth = maxWidth - paddingRight
-
+        textLineYs.clear()
         textPositions.clear()
         //X 的初始化位置
         val initX = paddingLeft.toFloat()
@@ -185,14 +201,16 @@ class LineBreakTextView : View {
 
         var isNeedCheckParagraphHeadEmptyChar = false//是否检查段首空白字符
 
-        val fontMetrics = textPaint.fontMetrics
-        val lineHeight = (fontMetrics.bottom - fontMetrics.top) * lineSpacingMultiplier
-        curY += lineHeight
+        val titleFontMetrics = titlePaint.fontMetrics
+        val textFontMetrics = textPaint.fontMetrics
+        val lineHeight = textFontMetrics.bottom - textFontMetrics.top
 
         //首行是否为标题
         var textType = if (isNeedTitle) {
+            curY -= titleFontMetrics.top//指定顶点坐标
             TextPosition.TITLE
         } else {
+            curY -= textFontMetrics.top//指定顶点坐标
             TextPosition.NORMAL
         }
 
@@ -201,9 +219,7 @@ class LineBreakTextView : View {
             var i = 0
             while (i < size) {
                 val textPosition = TextPosition()
-
                 val c = textCharArray?.get(i)
-
                 if (isNeedCheckParagraphHeadEmptyChar) {
                     //空白字符判断
                     if (c == ' ' || c == '\u0020' || c == '\u3000') {
@@ -230,6 +246,7 @@ class LineBreakTextView : View {
 
                 isNeedCheckParagraphHeadEmptyChar = false
                 if (isParagraph(textCharArray, i)) {
+                    textLineYs.add(curY)
                     //如果是段落,再移动一位
                     i++
                     curX = initX + textPaint.measureText("中") * paragraphIndentSize//段首缩进
@@ -242,17 +259,21 @@ class LineBreakTextView : View {
                     isNeedCheckParagraphHeadEmptyChar = true
                     //除了首段，后续段落都为 Normal
                     textType = TextPosition.NORMAL
+
                 } else if (isNeedNewLine(textCharArray, i, curX, availableWidth)) {
+                    textLineYs.add(curY)
                     //断行需要回溯
                     curX = initX
-                    curY += lineHeight
+                    curY += lineHeight * lineSpacingMultiplier
                 }
                 textPositions.add(textPosition)
                 //移动下一个游标
                 i++
             }
             curY += paddingBottom
-            layoutHeight = curY
+            layoutHeight = curY + textFontMetrics.bottom//应加上后面的Bottom
+
+            Log.d(TAG, "总行数： ${textLineYs.size}" )
         }
     }
 
@@ -294,6 +315,13 @@ class LineBreakTextView : View {
             }
         }
         return false
+    }
+
+    /**
+     * 获取当前的行数
+     */
+    public fun getLines(): Int {
+        return textLineYs.size
     }
 
     /**
