@@ -15,8 +15,9 @@ import android.view.View
  *  2. 排版 lineBreak
  */
 
+private const val TAG = "LineBreakTextView"
+
 class LineBreakTextView : View {
-    private val TAG = "LineBreakTextView"
 
     /**
      * 段首缩进 字符数
