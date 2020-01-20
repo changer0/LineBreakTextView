@@ -334,8 +334,8 @@ class LineBreakTextView : View {
      */
     class TextPosition {
         companion object {
-            val NORMAL = 0x0
-            val TITLE = 0x1
+            const val NORMAL = 0x0
+            const val TITLE = 0x1
         }
 
         var text = ""
