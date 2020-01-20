@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             .displayMetrics
         //textView.isNeedTitle = false
         textView.lineBreak(dm.widthPixels)
-        textView.maxLines = 3
+        //textView.maxLines = 3
         setMaxHeight.setOnClickListener{
             if (textView.maxHeight == 300) {
                 textView.maxHeight = Int.MAX_VALUE
